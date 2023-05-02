@@ -28,7 +28,7 @@ router.post(
     } else {
       const user = User.build({email, password});
       await user.save();
-      console.log(`User ${user.email} persisted in db`);
+      // console.log(`User ${user.email} persisted in db`);
   
       // Generate JWT
       const userJwt = jwt.sign(
