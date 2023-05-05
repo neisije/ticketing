@@ -3,13 +3,7 @@ import { app } from '../../app';
 
 
 it('reset cookie after successful signout', async () => {
-  await request(app)
-  .post('/api/users/signup')
-  .send({
-    email: 'test@test.com',
-    password: 'q01234aA,zerty'
-  })
-  .expect(201);
+  const cookie = await signin();
 
   const response = await request(app)
   .post('/api/users/signout')

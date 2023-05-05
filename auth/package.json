@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node-dev src/index.ts",
-    "test": "ENV_NODE=test jest --watchAll --no-cache"
+    "test": "ENV_NODE=test jest --watchAll --no-cache --runInBand --verbose"
   },
   "jest": {
     "preset": "ts-jest",
