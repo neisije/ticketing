@@ -91,3 +91,21 @@ const Landing = () => {
   
 export default Landing;
 The warning will come up a few more times in this project (and throughout the course) when creating components and can be handled similarly.
+
+
+
+
+Small Update for Custom Webpack Config
+In the upcoming lecture, we will be creating a next.config.js file and adding some configuration to it. The latest versions of Next.js use a newer version of Webpack which moves watchOptions out from webpackDevMiddleware.
+
+So, the next.config.js file should now look like this:
+
+module.exports = {
+  webpack: (config) => {
+    config.watchOptions.poll = 300;
+    return config;
+  },
+};
+
+
+Note - If you are using the Next.js / React app and versions from the course resources this change does not apply.
