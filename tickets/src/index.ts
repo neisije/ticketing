@@ -1,17 +1,16 @@
-import mongoose  from 'mongoose';
+import mongoose from 'mongoose';
 import { DatabaseConnectionError } from '@jk2b/common';
 import { app } from './app';
 
 const start = async () => {
-
-  if ( ! process.env.JWT_KEY ) {
+  if (!process.env.JWT_KEY) {
     console.error('Env variable JWT_KEY must be defined !');
-    throw new Error('Env variable JWT_KEY must be defined !')
+    throw new Error('Env variable JWT_KEY must be defined !');
   }
 
-  if ( ! process.env.MONGODB_URL ) {
+  if (!process.env.MONGODB_URL) {
     console.error('Env variable MONGODB_URL must be defined !');
-    throw new Error('Env variable MONGODB_URL must be defined !')
+    throw new Error('Env variable MONGODB_URL must be defined !');
   }
 
   try {
@@ -25,9 +24,6 @@ const start = async () => {
   app.listen(3000, () => {
     console.log('Listening on port 3000!!!!!!!!');
   });
-}
+};
 
 start();
-
-
-
