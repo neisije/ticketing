@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { requireAuth } from '@jk2b/common'; 
 import { body } from "express-validator";
-import { BadRequestError, validateRequest } from '@jk2b/common';
+import { validateRequest } from '@jk2b/common';
 import { Ticket } from "../models/ticket";
 // import jwt from 'jsonwebtoken';
 
