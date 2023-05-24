@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError } from '@jk2b/common';
 import { Ticket } from "../models/ticket";
+
 // import jwt from 'jsonwebtoken';
 
 const router = express.Router();

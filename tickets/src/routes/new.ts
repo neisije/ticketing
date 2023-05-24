@@ -1,9 +1,9 @@
 import express, { Request, Response } from "express";
-import { requireAuth } from '@jk2b/common'; 
+import { requireAuth , validateRequest } from '@jk2b/common'; 
 import { body } from "express-validator";
-import { validateRequest } from '@jk2b/common';
 import { Ticket } from "../models/ticket";
-// import jwt from 'jsonwebtoken';
+import { TicketCreatedPublisher } from "../../events/publishers/ticket-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -25,7 +25,13 @@ router.post(
       const { title, price } = req.body;
       const ticket = Ticket.build({title, price, userId: req.currentUser!.id});
       await ticket.save();
-      
+
+      await new TicketCreatedPublisher(natsWrapper.client).publish({
+        id: ticket.id,
+        price: ticket.price,
+        title: ticket.title,
+        userId: ticket.userId.toString()
+      });      
       res.status(201).send(ticket);
     }
 );

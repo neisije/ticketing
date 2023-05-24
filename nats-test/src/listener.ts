@@ -1,6 +1,6 @@
 import nats from 'node-nats-streaming';
-import { Message } from 'node-nats-streaming';
 import { randomBytes } from 'crypto';
+import { TicketClassListener } from './events/ticket-created-listener';
 
 console.clear();
 const stan = nats.connect('ticketing', randomBytes(4).toString('hex'), {
@@ -8,29 +8,15 @@ const stan = nats.connect('ticketing', randomBytes(4).toString('hex'), {
 });
 
 stan.on('connect', () => {
-  console.log('listener connected to NATS');
+  console.log('publisher connected to NATS');
 
   stan.on('close', () => {
     console.log('NATS connection closed');
     process.exit();
   });
 
-  const options = stan.subscriptionOptions()
-  .setManualAckMode(true)
-  .setDeliverAllAvailable()
-  .setDurableName('ticket_created');
-
-  const subscription = stan.subscribe('ticket:created', 'queue-group-2', options);
-  subscription.on('message', (msg: Message) => {
-    const data = msg.getData();
-    if (typeof(data) === 'string') {
-      console.log(`Received message N° ${msg.getSequence()} : ${data}`);
-    }
-    msg.ack();
-    
-  });
+  new TicketClassListener(stan).listen();
 });
-
 
 process.on('SIGINT', () => {
   stan.close();
