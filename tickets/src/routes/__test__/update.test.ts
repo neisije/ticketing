@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { app } from '../../app';
 import { Ticket } from '../../models/ticket';
-import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import { natsWrapper } from '../../nats-wrapper';
 
 const createTicket = async () => {
   return request(app)
@@ -147,4 +147,33 @@ it('return a 201 if parameters are valid', async () => {
 
   expect(ticketResponse.body.title).toEqual(updatedTicket.body.title);
   expect(ticketResponse.body.price).toEqual(updatedTicket.body.price);
+});
+
+it('publishes an event', async () => {
+  const cookie = global.signin();
+
+  const ticket = await request(app)
+  .post('/api/tickets')
+  .set("Cookie", cookie)
+  .send({
+    title: 'Ticket',
+    price: 1
+  })
+  .expect(201);
+  
+  const id = ticket.body.id;
+
+  let tickets = await Ticket.find({});
+  expect(tickets.length).toEqual(1);
+
+  const updatedTicket = await request(app).put(`/api/ticket/${id}`)
+  .set('Cookie', cookie)
+  .send({
+    title: 'Title updated',
+    price: 4
+  })
+  .expect(200);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+
 });

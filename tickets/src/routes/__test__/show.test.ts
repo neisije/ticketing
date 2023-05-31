@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import mongoose from 'mongoose';
 
+
 it('Get ticket details of a valid userId', async () => {
 
   const title = 'This is a valid title';

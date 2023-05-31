@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import { DatabaseConnectionError } from '@jk2b/common';
 import { app } from './app';
 import { natsWrapper } from './nats-wrapper';
-import { randomBytes } from 'crypto';
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -15,8 +14,23 @@ const start = async () => {
     throw new Error('Env variable MONGODB_URL must be defined !');
   }
 
+  if (!process.env.NATS_URL) {
+    console.error('Env variable NATS_URL must be defined !');
+    throw new Error('Env variable NATS_URL must be defined !');
+  }
+
+  if (!process.env.NATS_CLUSTER_ID) {
+    console.error('Env variable NATS_CLUSTER_ID must be defined !');
+    throw new Error('Env variable NATS_CLUSTER_ID must be defined !');
+  }
+
+  if (!process.env.NATS_CLIENT_ID) {
+    console.error('Env variable NATS_CLIENT_ID must be defined !');
+    throw new Error('Env variable NATS_CLIENT_ID must be defined !');
+  }
+
   try {
-    await natsWrapper.connect('ticketing', randomBytes(4).toString('hex') , 'http://nats-srv:4222');
+    await natsWrapper.connect(process.env.NATS_CLUSTER_ID, process.env.NATS_CLIENT_ID , process.env.NATS_URL);
     natsWrapper.client.on('close', () => {
       console.log('NATS connection closed');
       process.exit();
