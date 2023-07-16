@@ -3,6 +3,7 @@ import { app } from '../../app';
 import { Order, OrderStatus } from '../../models/order';
 import { Ticket } from '../../models/ticket';
 import mongoose from "mongoose";
+import { natsWrapper } from '../../nats-wrapper';
 
 const buildTicket =  async () => {
   const ticket = Ticket.build({
@@ -67,4 +68,26 @@ it("returns an error if the order does not exist", async () => {
       .expect(404);
 });
 
-it.todo("Emits an order Cancelled event");
+
+it("Emits an order Cancelled event", async () => {
+
+  // create 1 ticket
+  const t1 = await buildTicket();
+  const user1 = global.signin();
+
+  // Create 1 order as User #1
+  const { body: order } = await request(app)
+  .post('/api/orders')
+  .set('Cookie', user1)
+  .send({ticketId: t1.id })
+  .expect(201);
+
+  await request(app)
+  .delete(`/api/orders/${order.id}`)
+  .set('Cookie', user1)
+  .send()
+  .expect(204);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+});

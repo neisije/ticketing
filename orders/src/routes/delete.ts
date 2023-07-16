@@ -1,9 +1,8 @@
 import express, { Request, Response } from "express";
-import mongoose from "mongoose";
-import { BadRequestError, NotFoundError, NotAuthorizedError, OrderStatus, requireAuth , validateRequest } from '@jk2b/common'; 
-import { body } from "express-validator";
+import {  NotFoundError, NotAuthorizedError, OrderStatus, requireAuth  } from '@jk2b/common'; 
 import { Order } from "../models/order";
-import { Ticket } from "../models/ticket";
+import { natsWrapper } from "../nats-wrapper";
+import { OrderCancelledPublisher } from "../events/publishers/order-cancelled-publisher";
 
 const router = express.Router();
 
@@ -13,7 +12,7 @@ async (req : Request,res: Response) => {
 
   const {orderId} = req.params ;
 
-  const order = await Order.findById(orderId);
+  const order = await Order.findById(orderId).populate('ticket');
   if (! order) {
     throw new NotFoundError();
   }
@@ -24,6 +23,12 @@ async (req : Request,res: Response) => {
   await order.save();
 
   // Publishing an event saying that this order is cancelled
+  new OrderCancelledPublisher(natsWrapper.client).publish({
+    id: order.id,
+    ticket : {
+      id: order.ticket.id
+    }
+  });
 
   res.status(204).send(order);
 });
