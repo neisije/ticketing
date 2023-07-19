@@ -7,7 +7,9 @@ it('Get ticket details of a valid userId', async () => {
 
   const title = 'This is a valid title';
   const price = 10;
+  const ticketId = new mongoose.Types.ObjectId();
   const ticket = {
+    id: ticketId.toHexString(),
     title: title,
     price: price
   }

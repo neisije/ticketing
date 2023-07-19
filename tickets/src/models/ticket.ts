@@ -1,59 +1,109 @@
-import mongoose from "mongoose";
+// import mongoose from 'mongoose';
+// import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
-// Interface that describes the properties required to create a new ticket
-interface ticketAttrs {
+// interface TicketAttrs {
+//   title: string;
+//   price: number;
+//   userId: string;
+// }
+
+// interface TicketDoc extends mongoose.Document {
+//   title: string;
+//   price: number;
+//   userId: string;
+//   version: number;
+// }
+
+// interface TicketModel extends mongoose.Model<TicketDoc> {
+//   build(attrs: TicketAttrs): TicketDoc;
+// }
+
+// const ticketSchema = new mongoose.Schema(
+//   {
+//     title: {
+//       type: String,
+//       required: true,
+//     },
+//     price: {
+//       type: Number,
+//       required: true,
+//     },
+//     userId: {
+//       type: String,
+//       required: true,
+//     },
+//   },
+//   {
+//     toJSON: {
+//       transform(doc, ret) {
+//         ret.id = ret._id;
+//         delete ret._id;
+//       },
+//     },
+//   }
+// );
+
+// ticketSchema.set('versionKey','version');
+// ticketSchema.plugin(updateIfCurrentPlugin);
+// ticketSchema.statics.build = (attrs: TicketAttrs) => {
+//   return new Ticket(attrs);
+// };
+
+// const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);
+
+// export { Ticket };
+
+import mongoose from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
+
+interface TicketAttrs {
   title: string;
   price: number;
   userId: string;
 }
 
-// Interface that describes the properties that a ticket model has
-interface TicketModel extends mongoose.Model<TicketDoc> {
-  build(attrs: ticketAttrs) : TicketDoc;
-}
-
-// Interface that describes the properties that the ticket document has
 interface TicketDoc extends mongoose.Document {
   title: string;
-  price : number;
-  userId : number;
+  price: number;
+  userId: string;
+  version: number;
 }
 
-export class TicketClass implements ticketAttrs {
-  public title: string = '';
-  public price: number = 0;
-  public userId: string = '';
-
+interface TicketModel extends mongoose.Model<TicketDoc> {
+  build(attrs: TicketAttrs): TicketDoc;
 }
 
-const ticketSchema = new mongoose.Schema ({
-  title: {
-    type: String,
-    required: true
+const ticketSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    userId: {
+      type: String,
+      required: true,
+    },
   },
-  price: {
-    type: Number,
-    required: true
-  },
-  userId: {
-    type: String,
-    required: true
-  }}, {
-    toJSON : {
+  {
+    toJSON: {
       transform(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
       },
-      versionKey: false
-    }
-});
+    },
+  }
+);
+ticketSchema.set('versionKey', 'version');
+ticketSchema.plugin(updateIfCurrentPlugin);
 
-
-ticketSchema.statics.build = ( attrs : ticketAttrs) => {
+ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket(attrs);
-}
+};
 
 const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);
 
-
-export {Ticket};
+export { Ticket };

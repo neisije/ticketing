@@ -1,12 +1,16 @@
 import request from 'supertest';
 import { app } from '../../app';
-
+import mongoose from 'mongoose';
 
 const createTicket = async () => {
-  return request(app)
+
+  const ticketId = new mongoose.Types.ObjectId();
+
+  return await request(app)
   .post('/api/tickets')
   .set("Cookie", global.signin())
   .send({
+    id: ticketId.toHexString(),
     title: 'Ticket',
     price: 1
   })

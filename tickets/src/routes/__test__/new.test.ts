@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import { Ticket } from '../../models/ticket';
 import { natsWrapper } from '../../nats-wrapper';
+import mongoose from 'mongoose';
 
 it('has a route handler listening to /api/tickets for post requests', async () => {
   const response = await request(app).post('/api/tickets').send({});
@@ -21,10 +22,13 @@ it('works if user is signed in', async () => {
 });
 
 it('returns an error if an invalid title is provided', async () => {
+  const ticketId = new mongoose.Types.ObjectId();
+
   await request(app)
   .post('/api/tickets')
   .set("Cookie", global.signin())
   .send({
+    id: ticketId.toHexString(),
     title: '',
     price: 10
   })
@@ -44,6 +48,7 @@ it('returns an error if an invalid price is provided', async () => {
   .post('/api/tickets')
   .set("Cookie", global.signin())
   .send({
+    id: 'flksjlksjfl',
     title: 'This is a title',
     price: -1
   })
@@ -65,6 +70,7 @@ it('it creates a ticket with valid parameters', async () => {
 
   const title = 'This is a valid title';
   const ticket = {
+    id: 'llkjlkjlkjlk',
     title: title,
     price: 1
   }
@@ -85,6 +91,7 @@ it('it creates a ticket with valid parameters', async () => {
 it('publishes an event', async () => {
   const title = 'This is a valid title';
   const ticket = {
+    id: 'kljlkjlkjlk',
     title: title,
     price: 1
   }

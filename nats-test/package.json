@@ -5,15 +5,13 @@
   "main": "index.js",
   "scripts": {
     "publish": "ts-node-dev --rs --notify false src/publisher.ts",
-    "publish2": "ts-node-dev --rs --notify false src/publisher2.ts",
-    "listen": "ts-node-dev --rs --notify false src/listener.ts",
-    "listen2": "ts-node-dev --rs --notify false src/listener2.ts"
+    "listen": "ts-node-dev --rs --notify false src/listener.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@jk2b/common": "^1.0.10",
+    "@jk2b/common": "^1.0.20",
     "@types/node": "^20.1.7",
     "nats": "^2.13.1",
     "node-nats-streaming": "^0.3.2",

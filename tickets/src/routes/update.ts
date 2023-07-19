@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError } from '@jk2b/common';
 import { Ticket } from "../models/ticket";
-import { TicketUpdatedPublisher } from "../../events/publishers/ticket-updated-publisher";
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
 import { natsWrapper } from "../nats-wrapper";
 
 
@@ -42,14 +42,13 @@ router.put(
       
       await ticket.save();
       
-      await new TicketUpdatedPublisher(natsWrapper.client).publish({
+      new TicketUpdatedPublisher(natsWrapper.client).publish({
         id: ticket.id,
-        price: ticket.price,
         title: ticket.title,
-        userId: ticket.userId.toString()
-      });  
-
-      console.log(`Ticket ${ticket.id} updated : Ticket's price is now ${ticket.price} !!!`);
+        price: ticket.price,
+        userId: ticket.userId,
+        version: ticket.version,
+      });
 
       res.status(200).send(ticket);
     }

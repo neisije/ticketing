@@ -22,12 +22,13 @@ async (req : Request,res: Response) => {
   order.status = OrderStatus.Cancelled;
   await order.save();
 
-  // Publishing an event saying that this order is cancelled
+  // publishing an event saying this was cancelled!
   new OrderCancelledPublisher(natsWrapper.client).publish({
     id: order.id,
-    ticket : {
-      id: order.ticket.id
-    }
+    version: order.version,
+    ticket: {
+      id: order.ticket.id,
+    },
   });
 
   res.status(204).send(order);
