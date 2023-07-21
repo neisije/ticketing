@@ -4,9 +4,8 @@ import { Ticket } from '../../models/ticket';
 import mongoose from 'mongoose';
 
 const buildTicket =  async () => {
-  const ticketId = new mongoose.Types.ObjectId();
   const ticket = Ticket.build({
-    id: ticketId.toHexString(),
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: 'BBB',
     price: 20
   });

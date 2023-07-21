@@ -19,9 +19,8 @@ it("returns an error if the ticket does not exist", async () => {
 
 
 it("returns an error if the ticket is already reserved", async () => {
-  const ticketId = new mongoose.Types.ObjectId();
   const ticket = Ticket.build({
-    id: ticketId.toHexString(),
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "AC/DC",
     price: 10
   });
