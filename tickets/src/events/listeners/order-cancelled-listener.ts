@@ -1,17 +1,14 @@
 import { Message } from 'node-nats-streaming';
-import { Subjects, Listener, OrderCreatedEvent } from '@jk2b/common';
+import { Subjects, Listener, OrderCancelledEvent } from '@jk2b/common';
 import { queueGroupName } from './queue-group-name';
-import { Order } from '../../../../orders/src/models/order';
 import { Ticket } from '../../models/ticket';
 import { TicketUpdatedPublisher } from '../publishers/ticket-updated-publisher';
-// import { natsWrapper } from '../../nats-wrapper';
 
-
-export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
-  subject: Subjects.OrderCreated = Subjects.OrderCreated;
+export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
+  subject: Subjects.OrderCancelled = Subjects.OrderCancelled;
   queueGroupName = queueGroupName;
 
-  async onMessage(data: OrderCreatedEvent['data'], msg: Message) {
+  async onMessage(data: OrderCancelledEvent['data'], msg: Message) {
 
     // find the ticket that the order is reserving
     const ticket = await Ticket.findById(data.ticket.id);
@@ -21,8 +18,9 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
       throw new Error('Ticket not found');
     }
 
-    // mark the ticket as reserved by setting its orderid property
-    ticket.set({ orderId: data.id });
+    // mark the ticket as available by setting its orderid property
+    ticket.set({ orderId: undefined});
+
 
     // save the ticket
     await ticket.save();

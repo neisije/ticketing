@@ -1,13 +1,15 @@
 import mongoose from 'mongoose';
+import { Schema, Types, Document, Model } from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 interface TicketAttrs {
   title: string;
   price: number;
   userId: string;
+  orderId?: string;
 }
 
-interface TicketDoc extends mongoose.Document {
+interface TicketDoc extends Document {
   title: string;
   price: number;
   userId: string;
@@ -15,11 +17,11 @@ interface TicketDoc extends mongoose.Document {
   orderId?: string;
 }
 
-interface TicketModel extends mongoose.Model<TicketDoc> {
+interface TicketModel extends Model<TicketDoc> {
   build(attrs: TicketAttrs): TicketDoc;
 }
 
-const ticketSchema = new mongoose.Schema(
+const ticketSchema = new Schema(
   {
     title: {
       type: String,

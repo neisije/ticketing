@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
-import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError } from '@jk2b/common';
+import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError, BadRequestError } from '@jk2b/common';
 import { Ticket } from "../models/ticket";
 import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
 import { natsWrapper } from "../nats-wrapper";
@@ -33,6 +33,11 @@ router.put(
       if (ticket.userId.toString() !== req.currentUser!.id ) {
         throw new NotAuthorizedError('You are not allowed to update tickets you do not own');
       }
+
+      if (ticket.orderId) {
+        throw new BadRequestError('Cannot edit a reserved ticket');
+      }
+
       const { title, price } = req.body;
 
       ticket.set({

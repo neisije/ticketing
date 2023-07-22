@@ -193,3 +193,31 @@ it('increments the version number', async () => {
   await ticket.save();
   expect(ticket.version).toEqual(2);
 });
+
+it('do not edit a reserverd ticket', async () => {
+  const cookie = global.signin();
+
+  const ticket = await request(app)
+  .post('/api/tickets')
+  .set("Cookie", cookie)
+  .send({
+    title: 'Ticket',
+    price: 1
+  })
+  .expect(201);
+  
+  const ticketdb = await Ticket.findById(ticket.body.id);
+  const id = ticket.body.id;
+  const orderId = new mongoose.Types.ObjectId().toHexString();
+  ticketdb!.set({orderId: orderId});
+  await ticketdb!.save();
+
+  const updatedTicket = await request(app).put(`/api/ticket/${id}`)
+  .set('Cookie', cookie)
+  .send({
+    title: 'Ticket Updated',
+    price: 2
+  })
+  .expect(400);
+
+});
