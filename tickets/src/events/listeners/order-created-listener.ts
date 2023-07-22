@@ -1,7 +1,6 @@
 import { Message } from 'node-nats-streaming';
 import { Subjects, Listener, OrderCreatedEvent } from '@jk2b/common';
 import { queueGroupName } from './queue-group-name';
-import { Order } from '../../../../orders/src/models/order';
 import { Ticket } from '../../models/ticket';
 import { TicketUpdatedPublisher } from '../publishers/ticket-updated-publisher';
 // import { natsWrapper } from '../../nats-wrapper';
