@@ -1,63 +1,57 @@
+import mongoose from 'mongoose';
 import request from 'supertest';
 import { app } from '../../app';
+import { Order } from '../../models/order';
 import { Ticket } from '../../models/ticket';
-import mongoose from 'mongoose';
 
-const buildTicket =  async () => {
+const buildTicket = async () => {
   const ticket = Ticket.build({
     id: new mongoose.Types.ObjectId().toHexString(),
-    title: 'AAA',
-    price: 20
+    title: 'concert',
+    price: 20,
   });
-
   await ticket.save();
+
   return ticket;
-}
+};
 
-it('fetches orders for a specific user', async () => {
+it('fetches orders for an particular user', async () => {
+  // Create three tickets
+  const ticketOne = await buildTicket();
+  const ticketTwo = await buildTicket();
+  const ticketThree = await buildTicket();
 
-  // create 3 tickets
-  const t1 = await buildTicket();
-  const t2 = await buildTicket();
-  const t3 = await buildTicket();
-
-  const user1 = global.signin();
-  const user2 = global.signin();
-
-  // Create 1 order as User #1
+  const userOne = global.signin();
+  const userTwo = global.signin();
+  // Create one order as User #1
   await request(app)
-  .post('/api/orders')
-  .set('Cookie', user1)
-  .send({ticketId: t1.id })
-  .expect(201);
+    .post('/api/orders')
+    .set('Cookie', userOne)
+    .send({ ticketId: ticketOne.id })
+    .expect(201);
 
-  // Create 2 orders as User #2
-  const { body: order2 } = await request(app)
-  .post('/api/orders')
-  .set('Cookie', user2)
-  .send({ticketId: t2.id })
-  .expect(201);
+  // Create two orders as User #2
+  const { body: orderOne } = await request(app)
+    .post('/api/orders')
+    .set('Cookie', userTwo)
+    .send({ ticketId: ticketTwo.id })
+    .expect(201);
+  const { body: orderTwo } = await request(app)
+    .post('/api/orders')
+    .set('Cookie', userTwo)
+    .send({ ticketId: ticketThree.id })
+    .expect(201);
 
-  const { body: order3 } = await request(app)
-  .post('/api/orders')
-  .set('Cookie', user2)
-  .send({ticketId: t3.id })
-  .expect(201);
-
-  // Make request to get orders for user #2
-
+  // Make request to get orders for User #2
   const response = await request(app)
-  .get('/api/orders')
-  .set('Cookie', user2)
-  .expect(200);
+    .get('/api/orders')
+    .set('Cookie', userTwo)
+    .expect(200);
 
-  // Make sure we only got the orders for user #2
+  // Make sure we only got the orders for User #2
   expect(response.body.length).toEqual(2);
-  expect(response.body[0].id).toEqual(order2.id);
-  expect(response.body[1].id).toEqual(order3.id);
-  expect(response.body[0].ticket.id).toEqual(t2.id);
-  expect(response.body[1].ticket.id).toEqual(t3.id);
-
+  expect(response.body[0].id).toEqual(orderOne.id);
+  expect(response.body[1].id).toEqual(orderTwo.id);
+  expect(response.body[0].ticket.id).toEqual(ticketTwo.id);
+  expect(response.body[1].ticket.id).toEqual(ticketThree.id);
 });
-
-

@@ -11,7 +11,7 @@ export class TicketClassListener extends listener<TicketCreatedEvent> {
   queueGroupName: string = 'payment-service';
 
   onMessage(data: TicketCreatedEvent['data'], msg: Message) {
-    console.log('Event Data : ', msg.getSequence(), data);
+    // console.log('Event Data : ', msg.getSequence(), data);
     msg.ack();
   }
 }

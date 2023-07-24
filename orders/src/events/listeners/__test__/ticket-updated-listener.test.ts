@@ -56,16 +56,14 @@ it('acks the message', async () => {
   expect(msg.ack).toHaveBeenCalled();
 });
 
-it('it does not acks unordered messages', async () => {
+it('does not call ack if the event has a skipped version number', async () => {
   const { msg, data, listener, ticket } = await setup();
 
   data.version = 10;
 
   try {
     await listener.onMessage(data, msg);
-  } catch (err) {
-    
-  }
-  
+  } catch (err) {}
+
   expect(msg.ack).not.toHaveBeenCalled();
 });

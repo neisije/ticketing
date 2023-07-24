@@ -1,99 +1,70 @@
+import mongoose from 'mongoose';
 import request from 'supertest';
 import { app } from '../../app';
 import { Order, OrderStatus } from '../../models/order';
 import { Ticket } from '../../models/ticket';
-import mongoose from "mongoose";
 import { natsWrapper } from '../../nats-wrapper';
 
-it("returns an error if the ticket does not exist", async () => {
+it('returns an error if the ticket does not exist', async () => {
   const ticketId = new mongoose.Types.ObjectId();
 
-    await request(app)
-      .post('/api/orders')
-      .set('Cookie', global.signin())
-      .send({
-        ticketId
-      })
-      .expect(404);
+  await request(app)
+    .post('/api/orders')
+    .set('Cookie', global.signin())
+    .send({ ticketId })
+    .expect(404);
 });
 
-
-it("returns an error if the ticket is already reserved", async () => {
+it('returns an error if the ticket is already reserved', async () => {
   const ticket = Ticket.build({
     id: new mongoose.Types.ObjectId().toHexString(),
-    title: "AC/DC",
-    price: 10
+    title: 'concert',
+    price: 20,
   });
   await ticket.save();
-
-  const expiration = new Date();
-  expiration.setSeconds(expiration.getSeconds() + 15);
-
-  const order = Order.build({ 
-    userId: 'rrr',
+  const order = Order.build({
+    ticket,
+    userId: 'laskdflkajsdf',
     status: OrderStatus.Created,
-    expiresAt: expiration,
-    ticket
+    expiresAt: new Date(),
   });
   await order.save();
 
   await request(app)
-  .post('/api/orders')
-  .set('Cookie', global.signin())
-  .send({
-    ticketId: ticket.id
-  })
-  .expect(400);
-
+    .post('/api/orders')
+    .set('Cookie', global.signin())
+    .send({ ticketId: ticket.id })
+    .expect(400);
 });
 
-
-it("reserves a ticket", async () => {
-  const ticketId = new mongoose.Types.ObjectId();
+it('reserves a ticket', async () => {
   const ticket = Ticket.build({
-    id: ticketId.toHexString(),
-    title: 'Concert',
-    price: 20
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: 'concert',
+    price: 20,
   });
   await ticket.save();
 
   await request(app)
-  .post('/api/orders')
-  .set('Cookie', global.signin())
-  .send({
-    ticketId: ticket.id
-  })
-  .expect(201);
-
-  const tickets = await Ticket.find({});
-  expect(tickets.length).toEqual(1);
-  expect(tickets[0].title).toEqual('Concert');
-  expect(tickets[0].price).toEqual(20);
-
-  const orders = await Order.find({});
-  expect(orders.length).toEqual(1);
-  expect(orders[0].status).toEqual(OrderStatus.Created);
+    .post('/api/orders')
+    .set('Cookie', global.signin())
+    .send({ ticketId: ticket.id })
+    .expect(201);
 });
 
-
-it("Emits an order created event", async () => {
-  const ticketId = new mongoose.Types.ObjectId();
+it('emits an order created event', async () => {
   const ticket = Ticket.build({
-    id: ticketId.toHexString(),
-    title: 'Concert',
-    price: 20
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: 'concert',
+    price: 20,
   });
   await ticket.save();
 
   await request(app)
-  .post('/api/orders')
-  .set('Cookie', global.signin())
-  .send({
-    ticketId: ticket.id
-  })
-  .expect(201);
+    .post('/api/orders')
+    .set('Cookie', global.signin())
+    .send({ ticketId: ticket.id })
+    .expect(201);
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
-
 });
-

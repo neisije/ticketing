@@ -1,15 +1,13 @@
 import mongoose from 'mongoose';
-import { Schema, Types, Document, Model } from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 interface TicketAttrs {
   title: string;
   price: number;
   userId: string;
-  orderId?: string;
 }
 
-interface TicketDoc extends Document {
+interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
@@ -17,11 +15,11 @@ interface TicketDoc extends Document {
   orderId?: string;
 }
 
-interface TicketModel extends Model<TicketDoc> {
+interface TicketModel extends mongoose.Model<TicketDoc> {
   build(attrs: TicketAttrs): TicketDoc;
 }
 
-const ticketSchema = new Schema(
+const ticketSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -37,8 +35,7 @@ const ticketSchema = new Schema(
     },
     orderId: {
       type: String,
-      required: false,
-    }
+    },
   },
   {
     toJSON: {

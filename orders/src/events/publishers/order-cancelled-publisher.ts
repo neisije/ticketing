@@ -1,7 +1,5 @@
-import { Publisher, Subjects, OrderCancelledEvent} from '@jk2b/common';
+import { Subjects, Publisher, OrderCancelledEvent } from '@jk2b/common';
 
 export class OrderCancelledPublisher extends Publisher<OrderCancelledEvent> {
-
-  readonly subject = Subjects.OrderCancelled;
-
+  subject: Subjects.OrderCancelled = Subjects.OrderCancelled;
 }

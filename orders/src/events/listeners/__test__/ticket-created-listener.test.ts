@@ -42,8 +42,7 @@ it('creates and saves a ticket', async () => {
 });
 
 it('acks the message', async () => {
-  // call the onMessage function with the data object + message object
-  const { listener, data, msg } = await setup();
+  const { data, listener, msg } = await setup();
 
   // call the onMessage function with the data object + message object
   await listener.onMessage(data, msg);
