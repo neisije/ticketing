@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@jk2b/common": "^1.0.32",
+    "@jk2b/common": "^1.0.34",
     "@types/node": "^20.1.7",
     "nats": "^2.13.1",
     "node-nats-streaming": "^0.3.2",
