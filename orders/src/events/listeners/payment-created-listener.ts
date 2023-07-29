@@ -42,6 +42,7 @@ import {
 import { Message } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import { Order } from '../../models/order';
+import { OrderUpdatedPublisher } from '../publishers/order-updated-publisher';
 
 export class PaymentCreatedListener extends Listener<PaymentCreatedEvent> {
   readonly subject = Subjects.PaymentCreated;
@@ -60,6 +61,12 @@ export class PaymentCreatedListener extends Listener<PaymentCreatedEvent> {
       status: OrderStatus.Complete,
     });
     await order.save();
+
+    new OrderUpdatedPublisher(this.client).publish({
+      id: order.id,
+      version: order.version,
+      status: order.status
+    });
 
     msg.ack();
   }
