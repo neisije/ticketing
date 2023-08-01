@@ -7,12 +7,12 @@ export default () => {
     url: '/api/users/signout',
     method: 'post',
     body: {},
-    onSuccess: (resp) => Router.push('/')
+    onSuccess: () => Router.push('/')
   });
 
   useEffect(() => {
     doRequest();
   }, []);
 
-  return <div>Signin you out...</div>
-}
+  return <div>Signing you out...</div>;
+};
