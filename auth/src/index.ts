@@ -3,7 +3,8 @@ import { DatabaseConnectionError } from '@jk2b/common';
 import { app } from './app';
 
 const start = async () => {
-
+  console.log('Starting up...');
+  
   if ( ! process.env.JWT_KEY ) {
     console.error('Env variable JWT_KEY must be defined !');
     throw new Error('Env variable JWT_KEY must be defined !')
